@@ -11,3 +11,8 @@ Short records of why each choice was made. Format: context, decision, alternativ
 - **Context:** Low, bursty POC traffic on a budget.
 - **Decision:** Standard / Global Standard deployments.
 - **Rejected:** Provisioned throughput (reserved capacity is billed continuously; suited to steady production load needing predictable latency).
+
+## 003: gpt-4.1-mini as the chat model
+- **Context:** Q&A, tool calling and structured outputs for technicians, on a free-trial budget.
+- **Decision:** gpt-4.1-mini, Global Standard serverless deployment, low TPM limit as a guard against runaway loops. Single Foundry resource and project in one region, inside resource group rg-ai103.
+- **Rejected:** Larger models (higher cost per token, not needed for short answers); managed compute deployments (billed per hour even when idle); hub-based projects (legacy, extra dependencies).
