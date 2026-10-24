@@ -33,6 +33,10 @@ AI assistant for technicians maintaining industrial equipment:
 - Log every design choice in docs/decisions.md (context, decision, rejected
   alternatives). Update the README status table as features land.
 - Small, frequent commits.
+- Who changes what: Claude may edit and commit Markdown docs (CLAUDE.md,
+  README.md, docs/). I write all code and config myself (.py, .env,
+  requirements, workflows): give me the code/steps to type, then review it.
+  Ask before any other change (installs, Azure, pushes).
 
 ## Budget (Azure free account, must not cost money)
 - Standard / Global Standard deployments only, never Provisioned Throughput
