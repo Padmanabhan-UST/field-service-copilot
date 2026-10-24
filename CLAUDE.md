@@ -26,7 +26,7 @@ AI assistant for technicians maintaining industrial equipment:
 
 ## Rules
 - Keyless only: DefaultAzureCredential / managed identity, never API keys.
-  Data role: Azure AI User (Owner doesn't grant data access).
+  Data role: Foundry User, formerly "Azure AI User" (Owner doesn't grant data access).
 - Config via .env (see .env.example); never commit .env.
 - Use azure-ai-projects; get an OpenAI client via project.get_openai_client().
   Verify current SDK APIs against docs rather than relying on memory.

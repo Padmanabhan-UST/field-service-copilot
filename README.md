@@ -71,7 +71,7 @@ az login
 python src/01_foundation/hello_foundry.py
 ```
 
-If you get a 401/403, assign yourself the **Azure AI User** role on the Foundry resource. Subscription Owner manages resources but does not grant data access.
+If you get a 401/403, assign yourself the **Foundry User** role (formerly "Azure AI User") on the Foundry resource. Subscription Owner manages resources but does not grant data access.
 
 ## Cost controls
 
