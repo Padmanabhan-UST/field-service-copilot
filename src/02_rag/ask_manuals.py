@@ -26,7 +26,7 @@ def search_manuals(question: str, mode: str = "hybrid", top: int = 3) -> list[di
         kwargs["semantic_configuration_name"] = "semantic-config"
     return list(search_client(INDEX_NAME).search(**kwargs))
 
-def answer(question: str) -> None:
+def answer(question: str) -> str:
     chunks = search_manuals(question)
     sources = "\n\n".join(f"[{i}] {c['title']}\n{c['content']}" for i, c in enumerate(chunks, start=1))
     response = openai_client().responses.create(
