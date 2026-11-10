@@ -8,7 +8,7 @@ An AI assistant for technicians who maintain industrial equipment. Built on **Mi
 
 | Use case | Azure services | Status |
 |---|---|---|
-| Ask questions about equipment manuals, with cited answers | AI Search (hybrid + semantic ranker), Foundry model, RAG | ⬜ |
+| Ask questions about equipment manuals, with cited answers | AI Search (hybrid + semantic ranker), Foundry model, RAG | ✅ |
 | Extract vendor, date, total and line items from scanned invoices | Document Intelligence prebuilt invoice / Content Understanding | ⬜ |
 | Agent checks device status, drafts a work order, orders a spare part | Foundry Agent Service, OpenAPI tool, structured outputs, human approval | ⬜ |
 | Technician uploads a photo of a damaged part | Multimodal image understanding | ⬜ |
@@ -38,6 +38,7 @@ Why each service was chosen over the alternatives. Full log in [docs/decisions.m
 
 - **Keyless auth (Entra ID + RBAC)** — no secrets in code or config; least-privilege data roles.
 - **Hybrid search** — technicians search by exact part numbers *and* natural-language symptoms.
+- **Grounded answers** — the model answers only from retrieved manual sections, cites them, and says when the manuals don't cover a question.
 - _(added as the build progresses)_
 
 ## Repository layout
