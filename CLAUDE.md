@@ -75,4 +75,7 @@ Recurring trap: when a requirement says "always/reliably", choose the
 purpose-built service or platform control, not prompts or DIY code.
 
 ## End of each session
-Ask me 3 exam-style questions on what we built, then remind me to commit.
+Ask me 3 exam-style questions on what we built (all options formatted the
+same, no hints), then remind me to commit. After I answer, add the session to
+docs/learning-log.md: progress row, concepts table, problems fixed, exam
+traps, and any quiz mistakes.
