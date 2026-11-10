@@ -44,16 +44,26 @@ AI assistant for technicians maintaining industrial equipment:
 - Delete custom speech endpoints after testing; keep image/video generation
   calls minimal; one resource group (rg-ai103)
 
-## Schedule (Sat & Sun, 2–4 PM IST)
-- Oct 24: foundation + first keyless call (src/01_foundation)
-- Oct 25: manuals → AI Search → RAG
-- Oct 31: Prompt Shields, content filters, structured outputs
-- Nov 1: agent + OpenAPI tool + approval gate
-- Nov 7: evaluations, tracing, CI gate
-- Nov 8: invoices + Content Understanding
-- Nov 14: vision (photo, masked edit, video)
-- Nov 15: speech + translation
-- Nov 21–22: mock exams, demo video, teardown
+## Schedule (catch-up plan, daily, revised Nov 10; nothing cut)
+Done: Oct 24 foundation + first keyless call; Oct 25–Nov 10 manuals ingested
+into AI Search (38 chunks).
+- Nov 11 (1 h): RAG query: hybrid + semantic ranker + citations
+- Nov 12 (1 h): structured outputs for work orders
+- Nov 13 (1.5 h): content filters, Prompt Shields, groundedness detection
+- Nov 14 (1 h): agent + OpenAPI tool (mock device API)
+- Nov 15 (1.5 h): agent + search tool + human approval before ordering a part
+- Nov 16 (1.5 h): evaluations + tracing (App Insights)
+- Nov 17 (1.5 h): CI eval gate in GitHub Actions, keyless via OIDC
+- Nov 18 (1 h): Document Intelligence prebuilt invoice vs DIY OCR
+- Nov 19 (1.5 h): Content Understanding: documents + video segmentation
+- Nov 20 (1.5 h): vision: damaged-part photo + masked image edit
+- Nov 21 (2 h): speech: STT + phrase list + Custom Speech + Translator
+  glossary + TTS (delete custom endpoint same day)
+- Nov 22 (1.5 h): demo recording, README polish, teardown of rg-ai103
+  (firm date: free credit ends ~Nov 23)
+- Nov 23–25 (1 h/day): mock exams + review mistakes (no Azure needed)
+- Nov 26–28: exam
+If a session runs late, shift later sessions but keep the Nov 22 teardown.
 
 ## My weak areas (diagnostic, 12/15): spend extra time here
 - Structured outputs vs few-shot prompting (platform control beats prompt)
