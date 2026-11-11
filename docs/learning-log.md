@@ -11,8 +11,9 @@ What each session built, the concepts behind it, and the exam traps it covered. 
 | 2 | Oct 24 | Foundation | Azure free trial, budget alert, rg-ai103, Foundry resource + project, gpt-4.1-mini, Foundry User role, first keyless call | 3/3 |
 | 3 | Oct 25 – Nov 10 | Manual ingestion | AI Search (Free, RBAC only), embedding model, Search roles, 3 manuals chunked, embedded and indexed (38 chunks) | 1/3 |
 | 4 | Nov 10 | RAG query | Hybrid + semantic search, grounded answers with citations, refusal when manuals don't cover a question | 2/3 |
+| 5 | Nov 11 | Structured outputs | Work order from a free-text report: prompt-only JSON vs strict schema with Pydantic | 2/3 |
 
-Status: 4 of 13 hands-on sessions done, 1 day ahead of schedule.
+Status: 5 of 13 hands-on sessions done, 1 day ahead of schedule.
 
 ## Session details
 
@@ -89,6 +90,27 @@ Observed: the warranty question was correctly refused. One answer used a fact fr
 
 Exam traps: relevant results in the wrong order → semantic ranker. Never answer outside the documents → RAG + grounding instructions + groundedness evaluation (not fine-tuning, not temperature 0).
 
+### 5. Structured outputs (Nov 11)
+
+| Approach | What it guarantees |
+|---|---|
+| Prompt only ("reply in JSON") | Nothing; it's a request |
+| Few-shot examples | Nothing; better imitation, still a request |
+| JSON mode (`json_object`) | Valid JSON syntax only; field names and types can be anything |
+| Structured outputs (`json_schema`, `strict: true`) | JSON that matches your schema: required fields, types, allowed values |
+| Function calling with `strict: true` | Same mechanism, for tool arguments |
+
+| Python piece | Plain meaning |
+|---|---|
+| Pydantic `BaseModel` | A typed class that becomes the JSON schema; like a C# record with validation |
+| `Literal["low", ...]` | Only these values allowed, like an enum |
+| `responses.parse(..., text_format=WorkOrder)` | Sends the schema in strict mode and returns a typed object (`output_parsed`) |
+| `model_validate_json(raw)` | Parse and validate in one step; raises `ValidationError` |
+
+Observed: prompt-only JSON was parseable 0 of 3 times (wrapped in ```json fences). Strict schema worked first time. But the schema-valid output still had `"grease"` instead of part `GRS-LC2-400G` and invented steps without lockout/tagout.
+
+Exam traps: "must always match a schema" → structured outputs, not few-shot, not JSON mode, not retries. Structured outputs guarantees shape, not truth; correctness needs grounding (RAG) plus validation against real data.
+
 ## Quiz mistakes to revisit before the exam
 
 | Session | Question | Wrong answer | Right answer and why |
@@ -96,3 +118,4 @@ Exam traps: relevant results in the wrong order → semantic ranker. Never answe
 | 3 | Change a field type in production | Update with `create_or_update_index` | New index version + alias swap; existing fields are immutable |
 | 3 | Exact codes and plain-language symptoms | Vector only | Hybrid; vectors are weak on exact codes like `BRG-6205-2RS` |
 | 4 | Which parameter adds the vector part | `semantic_configuration_name` | `vector_queries`; "semantic" only re-orders results |
+| 5 | What JSON mode guarantees | Schema field names and types | Valid JSON syntax only; schema conformance needs structured outputs |
