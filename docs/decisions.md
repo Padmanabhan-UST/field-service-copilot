@@ -28,3 +28,9 @@ Short records of why each choice was made. Format: context, decision, alternativ
 - **Decision:** Retrieve the top 3 chunks with hybrid search (keyword + vector, k=10) re-ordered by the semantic ranker, pass them as numbered sources, and instruct the model to answer only from them, cite inline ([1]) and say "I can't find that in the manuals" when the sources don't cover the question. Return the source titles with every answer.
 - **Rejected:** Asking the model without retrieval (invents part numbers); keyword-only search (misses symptoms described in other words); vector-only search (weak on exact codes like BRG-6205-2RS); fine-tuning on the manuals (expensive, goes stale when manuals change, no citations).
 - **Observed:** A refusal for an uncovered question (warranty) works. One answer used a fact from source [2] but cited only [1][3], so citation accuracy needs automated evaluation (planned for evaluations).
+
+## 006: Structured outputs for work orders
+- **Context:** Work orders feed downstream systems (scheduling, parts ordering) that need a fixed shape: allowed priority values, parts with quantities, numeric hours.
+- **Decision:** Structured outputs (`json_schema`, `strict: true`) via `responses.parse` with a Pydantic `WorkOrder` model; `Literal` for priority, nested `PartLine` objects for parts.
+- **Rejected:** Prompt-only "reply in JSON" (0 of 3 attempts parseable: wrapped in ```json fences); few-shot examples (still best effort); JSON mode (valid syntax only, any field names); stripping fences in code (workaround for a problem the platform solves).
+- **Observed limit:** The schema guarantees shape, not correctness. The model returned the part number "grease" instead of GRS-LC2-400G and invented generic steps without lockout/tagout. Fix: ground the work order in retrieved manual sections (agent + search) and validate part numbers against the spare-parts list before ordering.
