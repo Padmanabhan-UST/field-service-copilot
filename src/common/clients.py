@@ -5,7 +5,7 @@ from azure.search.documents import SearchClient
 from azure.search.documents.indexes import SearchIndexClient
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from openai import OpenAI
-
+import requests
 from common.config import PROJECT_ENDPOINT, SEARCH_ENDPOINT
 
 _credential = DefaultAzureCredential()
@@ -34,3 +34,17 @@ def embeddings_client() -> OpenAI:
         base_url=f"{resource_endpoint}/openai/v1/",
         api_key=get_bearer_token_provider(_credential, "https://ai.azure.com/.default"),
     )
+
+def content_safety(operation: str, body: dict, api_version: str = "2024-09-01") -> dict:
+    """Call an Azure AI Content Safety operation on the Foundry resource, keyless."""
+    resource_endpoint = PROJECT_ENDPOINT.split("/api/projects/")[0]
+    token = _credential.get_token("https://cognitiveservices.azure.com/.default").token
+    response = requests.post(
+        f"{resource_endpoint}/contentsafety/text:{operation}",
+        params={"api-version": api_version},
+        headers={"Authorization": f"Bearer {token}"},
+        json=body,
+        timeout=60,
+    )
+    response.raise_for_status()
+    return response.json()

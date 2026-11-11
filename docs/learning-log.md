@@ -12,8 +12,9 @@ What each session built, the concepts behind it, and the exam traps it covered. 
 | 3 | Oct 25 – Nov 10 | Manual ingestion | AI Search (Free, RBAC only), embedding model, Search roles, 3 manuals chunked, embedded and indexed (38 chunks) | 1/3 |
 | 4 | Nov 10 | RAG query | Hybrid + semantic search, grounded answers with citations, refusal when manuals don't cover a question | 2/3 |
 | 5 | Nov 11 | Structured outputs | Work order from a free-text report: prompt-only JSON vs strict schema with Pydantic | 2/3 |
+| 6 | Nov 11 | Safety layers | Harm analysis, jailbreak blocked by the deployment, Prompt Shields (user + document attacks), groundedness detection | 2/3 |
 
-Status: 5 of 13 hands-on sessions done, 1 day ahead of schedule.
+Status: 6 of 13 hands-on sessions done, 2 days ahead of schedule.
 
 ## Session details
 
@@ -111,6 +112,25 @@ Observed: prompt-only JSON was parseable 0 of 3 times (wrapped in ```json fences
 
 Exam traps: "must always match a schema" → structured outputs, not few-shot, not JSON mode, not retries. Structured outputs guarantees shape, not truth; correctness needs grounding (RAG) plus validation against real data.
 
+Also covered: model choice = requirements → shortlist (catalog, leaderboards) → evaluate on your own data → smallest model that passes. Mixed simple and complex prompts at lowest cost → model router.
+
+### 6. Safety layers (Nov 11)
+
+| Layer | Question it answers | Checks |
+|---|---|---|
+| Content filters | Is this text harmful? | Hate, sexual, violence, self-harm; severity safe/low/medium/high; on input and output; part of the deployment's guardrail |
+| Prompt Shields: user prompt attack | Is the user trying to hijack the model? | Jailbreaks typed in chat ("you are DAN, ignore your rules") |
+| Prompt Shields: document attack | Is content the model reads trying to hijack it? | Instructions hidden in documents, emails, tool output (indirect prompt injection) |
+| Groundedness detection | Is the answer supported by the sources? | Answer vs grounding sources; preview API |
+| Custom blocklist | Is a forbidden term present? | Exact terms you define, e.g. competitor names |
+| Protected material | Is it reproducing copyrighted text or code? | Known lyrics, articles, public code |
+
+Observed: Violence severity 4 for a threat against a person. The jailbreak was blocked by the deployment's default guardrail (HTTP 400) without any setup. Prompt Shields flagged both the typed jailbreak and the instruction hidden in a "manual". Groundedness flagged "every 2000 hours" (a real number from the regreasing row, used for replacement).
+
+How it's called: REST on the Foundry resource (`/contentsafety/text:analyze`, `text:shieldPrompt`, `text:detectGroundedness`), keyless with an Entra token for the `cognitiveservices` scope.
+
+Exam traps: who wrote the attack decides the shield type. Typed by the user → user prompt attack. Hidden in an email, document or web page the model reads → document attack. Unsupported claims → groundedness, not content filters. Specific words → blocklist, not a severity threshold.
+
 ## Quiz mistakes to revisit before the exam
 
 | Session | Question | Wrong answer | Right answer and why |
@@ -119,3 +139,4 @@ Exam traps: "must always match a schema" → structured outputs, not few-shot, n
 | 3 | Exact codes and plain-language symptoms | Vector only | Hybrid; vectors are weak on exact codes like `BRG-6205-2RS` |
 | 4 | Which parameter adds the vector part | `semantic_configuration_name` | `vector_queries`; "semantic" only re-orders results |
 | 5 | What JSON mode guarantees | Schema field names and types | Valid JSON syntax only; schema conformance needs structured outputs |
+| 6 | Hidden instruction inside an email the agent reads | Prompt Shields, user prompt attack | Prompt Shields, document attack; the attacker wrote the email, not the user |
