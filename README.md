@@ -2,7 +2,7 @@
 
 An AI assistant for technicians who maintain industrial equipment. Built on **Microsoft Foundry** and Azure AI services, keyless end to end (Microsoft Entra ID, no API keys in code).
 
-> Status: 🚧 in progress (Oct–Nov 2026). Built alongside preparation for Microsoft AI-103 (Azure AI Apps and Agents Developer Associate).
+> Status: ✅ complete (Oct–Nov 2026). Built alongside preparation for Microsoft AI-103 (Azure AI Apps and Agents Developer Associate). The Azure resources were torn down after the build, so the scripts no longer run as is; see [docs/decisions.md](docs/decisions.md) for the design choices and [docs/learning-log.md](docs/learning-log.md) for what each session built and observed.
 
 ## What it does
 
