@@ -19,8 +19,9 @@ What each session built, the concepts behind it, and the exam traps it covered. 
 | 10 | Nov 18 | Document Intelligence | Prebuilt invoice model with confidence-based routing vs DIY OCR + LLM | 2/3 |
 | 11 | Nov 18 | Vision | Generated damaged-part photo, structured damage report from a multimodal model, prompt-only image edit | 3/3 |
 | 12 | Nov 18 | Speech + translation | TTS voice note, fast transcription with a phrase list, Translator with dynamic dictionary, German TTS (Custom Speech as theory) | 2/3 |
+| 13 | Nov 19 | Content Understanding | Video transcript with speakers and key frames from `prebuilt-video` (segmentation as theory) | 3/3 |
 
-Status: 12 of 13 hands-on sessions done. Catch-up day: remaining sessions run back to back.
+Status: all 13 hands-on service sessions done. Remaining: CI eval gate, README polish, teardown.
 
 ## Session details
 
@@ -275,6 +276,26 @@ Exam traps: change only one region, everything else identical → masked edit. M
 Observed: without a phrase list, "two BRG sixty-two oh five bearings" became "to be our G6205"; only the full spoken phrase in the phrase list fixed it, which shows the limit of phrase lists. Translator kept `E103` and `BRG 6205` exact in German. Translator with Entra auth needs `Ocp-Apim-ResourceId` and `Ocp-Apim-Subscription-Region`.
 
 Exam traps: few terms + no training → phrase list; many terms + accents + noise → Custom Speech. Single short texts → dynamic dictionary; whole documents → glossary.
+
+### 13. Content Understanding (Nov 19)
+
+| | Specialised services | Content Understanding |
+|---|---|---|
+| Scope | One service per media type | One API for documents, images, audio, video |
+| Output definition | Fixed or custom-trained models | Analyzers: prebuilt, or custom with a plain-language field schema, no training |
+| Under the hood | Dedicated models | Extraction (OCR, transcription, key frames) + your generative model deployments |
+| Video | – | Transcript, speakers, key frames, segments with descriptions |
+
+| Concept | Plain meaning |
+|---|---|
+| Analyzer | Recipe for what to extract (`prebuilt-video`, `prebuilt-invoice`, custom) |
+| Defaults (`PATCH /contentunderstanding/defaults`) | Map the models analyzers need to your deployments; required once per resource |
+| Markdown output | LLM- and index-friendly: WebVTT transcript with speaker labels, key-frame references |
+| Polling `Operation-Location` | The long-running-operation pattern done by hand |
+
+Problems hit: defaults not set (mapped `gpt-4.1-mini`); `prebuilt-videoSearch` (segmentation) failed with a service-side internal error, so `prebuilt-video` was used.
+
+Exam traps: custom fields across documents, audio and video, no training → Content Understanding custom analyzer. Searchable video scenes with summaries → video analyzer with segmentation, then index. Standard invoices with confidence routing → still Document Intelligence prebuilt.
 
 ## Quiz mistakes to revisit before the exam
 
