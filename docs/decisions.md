@@ -80,3 +80,9 @@ Short records of why each choice was made. Format: context, decision, alternativ
 - **Rejected:** The Speech SDK (REST covers file-based transcription and synthesis without a native package); Document Translation with a glossary (for whole documents in storage, not short notes); Custom Speech, studied as theory only (see below).
 - **Observed:** Without a phrase list, "two BRG sixty-two oh five bearings" became "to be our G6205 bearings". Short phrase-list entries ("BRG", "two BRG 6205 bearings") didn't help; only the full spoken phrase did. Translation kept `E103` and `BRG 6205` exact.
 - **Custom Speech (theory):** For many domain terms, accents or factory noise, train a custom model with plain text (domain sentences), pronunciation data (BRG = "b r g") and, for acoustics, audio with human transcripts; compare word error rate (WER) against the base model; a deployed custom endpoint is billed per hour. Skipped hands-on to save time.
+
+## 014: Content Understanding for inspection videos
+- **Context:** Inspection videos should become searchable text: who said what, when, and what was on screen.
+- **Decision:** Content Understanding on the Foundry resource (REST, `2025-11-01`, keyless), `prebuilt-video` analyzer on a video passed by URL. Resource defaults map the `gpt-4.1-mini` model to the existing deployment (set once with `PATCH /contentunderstanding/defaults`). Output is Markdown: WebVTT transcript with speaker labels plus key-frame references, ready to index in AI Search.
+- **Rejected:** Separate Speech + Vision calls stitched together in code (more code, no key frames or segments); `prebuilt-videoSearch` with segments and per-segment descriptions: it failed with a service-side `InternalServerError`, so segmentation stays theory.
+- **Observed:** 43.9 s sample video, 4 speakers, 6 transcript lines, 44 key frames.
