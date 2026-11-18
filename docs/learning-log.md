@@ -327,3 +327,13 @@ Exam traps: pipeline to Azure without secrets → OIDC federated credential. "No
 | 6 | Hidden instruction inside an email the agent reads | Prompt Shields, user prompt attack | Prompt Shields, document attack; the attacker wrote the email, not the user |
 | 10 | Text, tables and checkboxes with no named fields | Custom extraction model | Layout model; custom models are for extracting your own named fields |
 | 12 | Keep product codes unchanged in short, one-at-a-time text translations | Document Translation with a glossary | Dynamic dictionary markup in the request; glossaries are for whole documents |
+| Mock 1 Q4 | RAG returns incomplete procedures split across chunks | Embedding model with more dimensions | Chunk by document sections with overlap; the problem is where text is cut, not how it's embedded |
+| Mock 1 Q12 | Agent answers from ~200 user-uploaded PDFs, minimal setup, service-managed vector store | Azure AI Search tool with a custom index | File search: upload files, Foundry chunks, embeds and stores them; AI Search is for an index you build and own |
+| Mock 1 Q13 | Blob documents chunked, embedded, indexed and kept in sync without custom code | A vectorizer only | Indexer + skillset (split + embedding skills); a vectorizer only embeds queries at search time |
+| Mock 1 Q19 | Translate 500 Word manuals in Blob Storage with consistent terminology | Text translation with dynamic dictionary per request | Document Translation with a glossary: whole files, company-wide terms (the reverse of the session 12 trap) |
+
+## Mock exams
+
+| Mock | Date | Score | Wrong |
+|---|---|---|---|
+| 1 | Nov 19 | 26/30 (87%) | Q4 chunking, Q12 file search, Q13 indexer + skillset, Q19 document translation glossary |
