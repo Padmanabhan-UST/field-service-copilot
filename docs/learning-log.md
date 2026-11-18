@@ -17,8 +17,9 @@ What each session built, the concepts behind it, and the exam traps it covered. 
 | 8 | Nov 18 | Agent + search + approval | Field agent: device API + built-in Azure AI Search tool (citations) + order function gated by a human | 3/3 |
 | 9 | Nov 18 | Evaluations + tracing | Groundedness and relevance over a JSON Lines test set; manual OpenTelemetry spans to Application Insights | 3/3 |
 | 10 | Nov 18 | Document Intelligence | Prebuilt invoice model with confidence-based routing vs DIY OCR + LLM | 2/3 |
+| 11 | Nov 18 | Vision | Generated damaged-part photo, structured damage report from a multimodal model, prompt-only image edit | 3/3 |
 
-Status: 10 of 13 hands-on sessions done. Catch-up day: remaining sessions run back to back.
+Status: 11 of 13 hands-on sessions done. Catch-up day: remaining sessions run back to back.
 
 ## Session details
 
@@ -232,6 +233,28 @@ Exam traps: quality across a test set → evaluation; slow step in one request �
 Observed: prebuilt and DIY gave identical results on a clean sample invoice. Only prebuilt gave confidences (0.93–0.96), so only it could auto-approve safely.
 
 Exam traps: standard document type → prebuilt model, not OCR + LLM. Your own form → custom extraction model. Text, tables and checkboxes without named fields → layout model. Route uncertain extractions to people → confidence scores.
+
+### 11. Vision (Nov 18)
+
+| Task | Model type |
+|---|---|
+| Understand an image (describe, judge damage, read text) | Multimodal chat model with image input |
+| Create an image from text | Image generation model |
+| Change an image, region guaranteed | Masked edit (inpainting): transparent mask pixels = area to change |
+| Change an image, by description only | Prompt-only edit (rest of the image not guaranteed) |
+| Company-specific classes or objects, with labeled photos | Custom image classification / object detection |
+
+| Python piece | Meaning |
+|---|---|
+| `{"type": "input_image", "image_url": "data:image/png;base64,..."}` | Sending a picture next to `input_text` in the Responses API |
+| `base64.b64encode(...).decode()` | Bytes to base64 text (like `Convert.ToBase64String`) |
+| `images.generate` / `images.edit` | Create / change a picture |
+
+Problems hit and fixed: no OpenAI image models offered to the subscription (used Microsoft's MAI-Image-2.7-Flash); MAI models are served on `/mai/v1`, not `/openai/v1`; MAI edits reject mask files, so masked inpainting stayed theory.
+
+Observed: report `corrosion / high / replace: true`; the edit kept the scene and replaced the bearing. The model read a handwritten note in a photo and used it as evidence: text in images can carry prompt injections.
+
+Exam traps: change only one region, everything else identical → masked edit. Many labeled photos and fixed company classes → custom vision model. Image input → `input_image` content, not instructions or search.
 
 ## Quiz mistakes to revisit before the exam
 
