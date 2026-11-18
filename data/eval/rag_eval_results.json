@@ -1,36 +1,39 @@
 {
-  "groundedness": 5.0,
-  "relevance": 4.2,
+  "failures": [],
   "rows": [
     {
       "query": "What does alarm E103 mean on the CP-200?",
-      "response": "Alarm E103 on the CP-200 means low suction pressure. The first checks should be the suction strainer for blockage and ensuring the suction valve is fully open [1].",
+      "response": "Alarm E103 on the CP-200 means low suction pressure. The first check should be the suction strainer for blockages and ensuring the suction valve is fully open [1].",
       "groundedness": 5.0,
-      "relevance": 4.0
+      "relevance": 4.0,
+      "passed": true
     },
     {
       "query": "How often should the CP-200 bearings be replaced?",
-      "response": "The CP-200 bearings should be replaced every 16,000 hours of operation [1].",
+      "response": "The CP-200 bearings should be replaced every 16000 hours of operation [1].",
       "groundedness": 5.0,
-      "relevance": 5.0
+      "relevance": 5.0,
+      "passed": true
     },
     {
       "query": "Which oil filter does the AC-75 use?",
       "response": "The AC-75 uses the oil filter OF-75-10 [1][3].",
       "groundedness": 5.0,
-      "relevance": 5.0
+      "relevance": 5.0,
+      "passed": true
     },
     {
       "query": "How do I fix an F02 overvoltage trip on the VFD-400?",
-      "response": "To fix an F02 overvoltage trip on the VFD-400, you should increase the deceleration time (parameter P1.05, default 10 s), or enable the overvoltage controller (set P2.11 = 1). If the load must stop quickly, install a braking resistor kit (part BRK-400-R) to absorb the regenerated energy [1].",
+      "response": "To fix an F02 overvoltage trip on the VFD-400, you should increase the deceleration time (parameter P1.05, default 10 s) or enable the overvoltage controller (P2.11 = 1). For loads that must stop quickly, install a braking resistor kit (part BRK-400-R) to absorb the regenerated energy [1].",
       "groundedness": 5.0,
-      "relevance": 5.0
+      "relevance": 5.0,
+      "passed": true
     },
     {
       "query": "What is the warranty period for the AC-75?",
       "response": "I can't find that in the manuals.",
-      "groundedness": 5.0,
-      "relevance": 2.0
+      "expected": "refuse",
+      "passed": true
     }
   ]
 }

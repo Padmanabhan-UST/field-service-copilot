@@ -39,22 +39,31 @@ def main() -> None:
     groundedness = GroundednessEvaluator(model_config=judge, credential=credential, threshold=THRESHOLD)
     relevance = RelevanceEvaluator(model_config=judge, credential=credential, threshold=THRESHOLD)
 
-    rows = []
+    rows, failures = [], []
     for line in TEST_SET.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
-        query = json.loads(line)["query"]
+        case = json.loads(line)
+        query = case["query"]
         response, context = rag(query)
-        g = groundedness(query=query, context=context, response=response)
-        r = relevance(query=query, response=response)
-        rows.append({"query": query, "response": response, "groundedness": g["groundedness"], "relevance": r["relevance"]})
-        print(f"G={g['groundedness']:.0f} R={r['relevance']:.0f}  {query}")
+        if case.get("expected") == "refuse":
+            passed = "can't find" in response.lower()
+            row = {"query": query, "response": response, "expected": "refuse", "passed": passed}
+            print(f"{'PASS' if passed else 'FAIL'} refusal  {query}")
+        else:
+            g = groundedness(query=query, context=context, response=response)["groundedness"]
+            r = relevance(query=query, response=response)["relevance"]
+            passed = g >= THRESHOLD and r >= THRESHOLD
+            row = {"query": query, "response": response, "groundedness": g, "relevance": r, "passed": passed}
+            print(f"{'PASS' if passed else 'FAIL'} G={g:.0f} R={r:.0f}  {query}")
+        rows.append(row)
+        if not passed:
+            failures.append(query)
 
-    avg_g = sum(row["groundedness"] for row in rows) / len(rows)
-    avg_r = sum(row["relevance"] for row in rows) / len(rows)
-    print(f"\nAverage groundedness {avg_g:.2f}, relevance {avg_r:.2f} (pass threshold {THRESHOLD})")
-    RESULTS.write_text(json.dumps({"groundedness": avg_g, "relevance": avg_r, "rows": rows}, indent=2), encoding="utf-8")
-    print(f"Saved {RESULTS.relative_to(ROOT)}")
+    RESULTS.write_text(json.dumps({"failures": failures, "rows": rows}, indent=2), encoding="utf-8")
+    print(f"\n{len(rows) - len(failures)}/{len(rows)} passed")
+    if failures and "--gate" in sys.argv:
+        sys.exit(1)  # a non-zero exit code fails the CI job
 
 
 if __name__ == "__main__":

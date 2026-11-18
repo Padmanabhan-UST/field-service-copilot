@@ -1,0 +1,32 @@
+name: RAG evaluation gate
+
+on:
+  push:
+    branches: [main]
+    paths: ["src/**", "data/eval/**", "requirements.txt"]
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # lets the job request the OIDC token
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ENDPOINT: ${{ vars.PROJECT_ENDPOINT }}
+      CHAT_DEPLOYMENT: ${{ vars.CHAT_DEPLOYMENT }}
+      EMBEDDING_DEPLOYMENT: ${{ vars.EMBEDDING_DEPLOYMENT }}
+      SEARCH_ENDPOINT: ${{ vars.SEARCH_ENDPOINT }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - run: python src/05_evals/eval_rag.py --gate
