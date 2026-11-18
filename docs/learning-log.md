@@ -14,8 +14,9 @@ What each session built, the concepts behind it, and the exam traps it covered. 
 | 5 | Nov 11 | Structured outputs | Work order from a free-text report: prompt-only JSON vs strict schema with Pydantic | 2/3 |
 | 6 | Nov 11 | Safety layers | Harm analysis, jailbreak blocked by the deployment, Prompt Shields (user + document attacks), groundedness detection | 2/3 |
 | 7 | Nov 18 | Agent + OpenAPI tool | Device-status agent; Foundry calls a mock REST API (static JSON on GitHub) described by an OpenAPI spec | 3/3 |
+| 8 | Nov 18 | Agent + search + approval | Field agent: device API + built-in Azure AI Search tool (citations) + order function gated by a human | 3/3 |
 
-Status: 7 of 13 hands-on sessions done. Catch-up day: remaining sessions run back to back.
+Status: 8 of 13 hands-on sessions done. Catch-up day: remaining sessions run back to back.
 
 ## Session details
 
@@ -158,6 +159,28 @@ Problems hit and fixed: `ModuleNotFoundError: common` (missing `sys.path.append`
 Observed: 1 API call for one device, 2 for a comparison. Without the manuals the agent couldn't explain alarm codes or notice PUMP-101 is past its 16,000 h bearing interval.
 
 Exam traps: existing REST API + no execution code → OpenAPI tool. Secure tool auth → managed identity, never keys in instructions or specs. Agent names: hyphens, not underscores.
+
+### 8. Agent + search tool + human approval (Nov 18)
+
+| Tool | Type | Run by | Why |
+|---|---|---|---|
+| Device status | OpenAPI | Foundry | Read-only, existing API |
+| Manual search | Azure AI Search tool | Foundry, via project connection | Built-in grounding with `url_citation` annotations |
+| Order spare part | Function tool (strict) | Your app, after a person types `y` | Real-world action needs a control point outside the model |
+
+| Concept | Plain meaning |
+|---|---|
+| Project connection | Stored "where and how" for an external resource; keyless = project managed identity |
+| Project managed identity | The identity Foundry uses for tool calls, separate from the Foundry resource's identity and from you |
+| Query types | `simple`, `semantic`, `vector`, `vector_simple_hybrid`, `vector_semantic_hybrid` |
+| Integrated vectorization | A vectorizer on the index embeds text queries; needed when the caller (agent, portal) sends text but wants vector search |
+| Fail-safe approval | Only an explicit `y` approves; anything else rejects |
+
+Problems hit and fixed: `tool_user_error` on every search (role not yet active, and the tool also needs Search Service Contributor to read the index definition); `vector_semantic_hybrid` fails (no vectorizer on the index); `previous_response_id=None` rejected by the API (send it only when set).
+
+Observed: one turn used the device API and the search tool together; the order request used the real part number `BRG-6205-2RS`; a rejected order was reported honestly.
+
+Exam traps: human approval → function tool (or a tool with approval required), never instructions. Agent with vector search over an index → vectorizer on the index. Keyless tool connections → grant roles to the project's managed identity.
 
 ## Quiz mistakes to revisit before the exam
 
