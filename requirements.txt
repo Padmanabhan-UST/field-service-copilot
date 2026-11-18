@@ -7,3 +7,4 @@ requests
 azure-ai-evaluation
 azure-monitor-opentelemetry
 opentelemetry-instrumentation-openai-v2
+azure-ai-documentintelligence
