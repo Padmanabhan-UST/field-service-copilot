@@ -9,7 +9,7 @@ An AI assistant for technicians who maintain industrial equipment. Built on **Mi
 | Use case | Azure services | Status |
 |---|---|---|
 | Ask questions about equipment manuals, with cited answers | AI Search (hybrid + semantic ranker), Foundry model, RAG | ✅ |
-| Extract vendor, date, total and line items from scanned invoices | Document Intelligence prebuilt invoice / Content Understanding | ⬜ |
+| Extract vendor, date, total and line items from scanned invoices | Document Intelligence prebuilt invoice / Content Understanding | ✅ |
 | Agent checks device status, drafts a work order, orders a spare part | Foundry Agent Service, OpenAPI tool, structured outputs, human approval | ✅ |
 | Technician uploads a photo of a damaged part | Multimodal image understanding | ⬜ |
 | Summarize an inspection video into searchable segments | Content Understanding video analyzer | ⬜ |

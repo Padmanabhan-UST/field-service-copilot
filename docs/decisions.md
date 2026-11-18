@@ -61,3 +61,9 @@ Short records of why each choice was made. Format: context, decision, alternativ
 - **Rejected:** `opentelemetry-instrumentation-openai-v2` (installed version broken against the installed OpenTelemetry utilities); connection-string-only ingestion (anyone with the string can send telemetry); judging quality from averages alone (one failing row hides behind a good mean).
 - **Observed:** Groundedness 5.00 average, relevance 4.20. The correct refusal for the warranty question scored relevance 2: the test set needs expected behaviour (e.g. `"expected": "refuse"`) and a matching check. The trace showed retrieval at 65% of a 10 s request, including about 2 s of `DefaultAzureCredential` probing for a managed identity that doesn't exist locally.
 - **Infrastructure:** Application Insights and its Log Analytics workspace both live in `rg-ai103`. Registering the `Microsoft.OperationalInsights` and `Microsoft.Insights` resource providers was needed first.
+
+## 011: Prebuilt invoice model for invoice extraction
+- **Context:** Vendor invoices for spare parts must be turned into data (vendor, ID, date, total, line items) and processed without checking every one by hand.
+- **Decision:** Document Intelligence `prebuilt-invoice` on the existing Foundry resource (keyless, `azure-ai-documentintelligence`). Auto-approve when every key field has confidence ≥ 0.8; otherwise send the invoice to a person.
+- **Rejected:** OCR (`prebuilt-read`) + LLM with structured outputs: same result on a clean sample, but no confidence scores, no positions, two calls instead of one, and a hallucination risk on poor scans. A custom model: not needed, invoices are a prebuilt type. A separate Document Intelligence F0 resource: the Foundry resource already includes it.
+- **Observed:** Both approaches extracted the sample correctly (Contoso, INV-100, $110.00, 3 lines). Prebuilt confidences 0.93–0.96, so the rule auto-approved.
