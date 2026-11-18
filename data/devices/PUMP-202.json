@@ -1,0 +1,12 @@
+{
+  "device_id": "PUMP-202",
+  "model": "Contoso CP-200 centrifugal pump",
+  "site": "South plant",
+  "status": "running",
+  "vibration_mm_s": 5.2,
+  "bearing_temp_c": 61,
+  "suction_pressure_bar": 0.4,
+  "active_alarms": ["E103"],
+  "running_hours": 4120,
+  "last_service": "2026-09-02"
+}

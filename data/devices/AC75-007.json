@@ -1,0 +1,11 @@
+{
+  "device_id": "AC75-007",
+  "model": "Contoso AC-75 rotary screw compressor",
+  "site": "North plant",
+  "status": "tripped",
+  "discharge_temp_c": 108,
+  "oil_level": "low",
+  "active_alarms": ["A201"],
+  "running_hours": 3980,
+  "last_service": "2026-06-20"
+}
