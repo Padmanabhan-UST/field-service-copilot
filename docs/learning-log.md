@@ -15,8 +15,9 @@ What each session built, the concepts behind it, and the exam traps it covered. 
 | 6 | Nov 11 | Safety layers | Harm analysis, jailbreak blocked by the deployment, Prompt Shields (user + document attacks), groundedness detection | 2/3 |
 | 7 | Nov 18 | Agent + OpenAPI tool | Device-status agent; Foundry calls a mock REST API (static JSON on GitHub) described by an OpenAPI spec | 3/3 |
 | 8 | Nov 18 | Agent + search + approval | Field agent: device API + built-in Azure AI Search tool (citations) + order function gated by a human | 3/3 |
+| 9 | Nov 18 | Evaluations + tracing | Groundedness and relevance over a JSON Lines test set; manual OpenTelemetry spans to Application Insights | 3/3 |
 
-Status: 8 of 13 hands-on sessions done. Catch-up day: remaining sessions run back to back.
+Status: 9 of 13 hands-on sessions done. Catch-up day: remaining sessions run back to back.
 
 ## Session details
 
@@ -181,6 +182,34 @@ Problems hit and fixed: `tool_user_error` on every search (role not yet active, 
 Observed: one turn used the device API and the search tool together; the order request used the real part number `BRG-6205-2RS`; a rejected order was reported honestly.
 
 Exam traps: human approval → function tool (or a tool with approval required), never instructions. Agent with vector search over an index → vectorizer on the index. Keyless tool connections → grant roles to the project's managed identity.
+
+Also covered: a vectorizer is an index setting that lets Search embed text queries itself. Your index has none; `ask_manuals.py` worked because your code embedded the question. The agent's `semantic` search is text only (keyword + semantic ranker, Microsoft's model inside Search), so no embedding model was involved.
+
+### 9. Evaluations + tracing (Nov 18)
+
+| | Evaluations | Tracing |
+|---|---|---|
+| Question | How good are the answers? | What happened inside this one request? |
+| How | Test set (JSON Lines) + evaluators scoring 1–5 | Spans with timings and attributes |
+| When | Before release, after every change (CI gate) | Continuously, and for debugging |
+| Where | Results file, Foundry evaluations | Application Insights, Foundry tracing |
+
+| Concept | Plain meaning |
+|---|---|
+| Groundedness evaluator | Is the response supported by the context? |
+| Relevance evaluator | Does the response answer the query? |
+| AI-assisted evaluator ("LLM as judge") | A model scores the output; configured with `AzureOpenAIModelConfiguration` |
+| Threshold | Pass mark (3 of 5); a CI gate fails below it |
+| Trace / span | One request / one step in it; nested `with` blocks create child spans |
+| `configure_azure_monitor` | Sends spans to Application Insights; Azure SDK and HTTP calls are captured automatically |
+| Monitoring Metrics Publisher | Role for keyless (Entra) telemetry ingestion |
+| Resource provider registration | A subscription must register e.g. `Microsoft.OperationalInsights` before creating that resource type |
+
+Problems hit and fixed: `MissingSubscriptionRegistration` (registered the resource providers); the SDK's App Insights helper refuses keyless connections (connection string from `.env` instead); `opentelemetry-instrumentation-openai-v2` broken (manual spans instead).
+
+Observed: groundedness 5.00, relevance 4.20. The correct warranty refusal scored relevance 2, because single metrics don't capture "should refuse". The trace showed retrieval at 65% of 10 s, including about 2 s of `DefaultAzureCredential` probing for a managed identity that doesn't exist on a laptop.
+
+Exam traps: quality across a test set → evaluation; slow step in one request → tracing. Authenticated telemetry only → Entra ingestion + Monitoring Metrics Publisher + disable local auth. Traces can contain personal data → limit access, control content recording. In production, prefer a specific credential (managed identity) over `DefaultAzureCredential`'s probing.
 
 ## Quiz mistakes to revisit before the exam
 

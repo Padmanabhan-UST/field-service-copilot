@@ -4,3 +4,6 @@ openai
 python-dotenv
 azure-search-documents
 requests
+azure-ai-evaluation
+azure-monitor-opentelemetry
+opentelemetry-instrumentation-openai-v2
