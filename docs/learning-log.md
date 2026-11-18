@@ -18,8 +18,9 @@ What each session built, the concepts behind it, and the exam traps it covered. 
 | 9 | Nov 18 | Evaluations + tracing | Groundedness and relevance over a JSON Lines test set; manual OpenTelemetry spans to Application Insights | 3/3 |
 | 10 | Nov 18 | Document Intelligence | Prebuilt invoice model with confidence-based routing vs DIY OCR + LLM | 2/3 |
 | 11 | Nov 18 | Vision | Generated damaged-part photo, structured damage report from a multimodal model, prompt-only image edit | 3/3 |
+| 12 | Nov 18 | Speech + translation | TTS voice note, fast transcription with a phrase list, Translator with dynamic dictionary, German TTS (Custom Speech as theory) | 2/3 |
 
-Status: 11 of 13 hands-on sessions done. Catch-up day: remaining sessions run back to back.
+Status: 12 of 13 hands-on sessions done. Catch-up day: remaining sessions run back to back.
 
 ## Session details
 
@@ -256,6 +257,25 @@ Observed: report `corrosion / high / replace: true`; the edit kept the scene and
 
 Exam traps: change only one region, everything else identical → masked edit. Many labeled photos and fixed company classes → custom vision model. Image input → `input_image` content, not instructions or search.
 
+### 12. Speech + translation (Nov 18)
+
+| Need | Tool |
+|---|---|
+| Text → natural speech | Neural text-to-speech with SSML (voice, language, rate, pronunciation) |
+| File → text in one call | Fast transcription (`transcriptions:transcribe`) |
+| Live streaming speech | Real-time recognition (Speech SDK) |
+| Many files, asynchronous | Batch transcription |
+| A few known phrases, no training, now | Phrase list |
+| Many terms, accents, noise, reliably | Custom Speech (plain text, pronunciation, audio + human transcripts; compare WER; endpoint billed per hour) |
+| Brand voice | Custom neural voice |
+| Keep terms exact in short text translations | Translator dynamic dictionary (`<mstrans:dictionary>`) |
+| Consistent terms across whole documents | Document Translation + glossary file |
+| Translation tuned to a domain | Custom Translator |
+
+Observed: without a phrase list, "two BRG sixty-two oh five bearings" became "to be our G6205"; only the full spoken phrase in the phrase list fixed it, which shows the limit of phrase lists. Translator kept `E103` and `BRG 6205` exact in German. Translator with Entra auth needs `Ocp-Apim-ResourceId` and `Ocp-Apim-Subscription-Region`.
+
+Exam traps: few terms + no training → phrase list; many terms + accents + noise → Custom Speech. Single short texts → dynamic dictionary; whole documents → glossary.
+
 ## Quiz mistakes to revisit before the exam
 
 | Session | Question | Wrong answer | Right answer and why |
@@ -266,3 +286,4 @@ Exam traps: change only one region, everything else identical → masked edit. M
 | 5 | What JSON mode guarantees | Schema field names and types | Valid JSON syntax only; schema conformance needs structured outputs |
 | 6 | Hidden instruction inside an email the agent reads | Prompt Shields, user prompt attack | Prompt Shields, document attack; the attacker wrote the email, not the user |
 | 10 | Text, tables and checkboxes with no named fields | Custom extraction model | Layout model; custom models are for extracting your own named fields |
+| 12 | Keep product codes unchanged in short, one-at-a-time text translations | Document Translation with a glossary | Dynamic dictionary markup in the request; glossaries are for whole documents |
