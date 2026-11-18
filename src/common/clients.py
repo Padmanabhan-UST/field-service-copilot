@@ -48,3 +48,11 @@ def content_safety(operation: str, body: dict, api_version: str = "2024-09-01") 
     )
     response.raise_for_status()
     return response.json()
+
+def image_client() -> OpenAI:
+    """MAI image models are served on the resource's /mai/v1 route, not /openai/v1."""
+    resource_endpoint = PROJECT_ENDPOINT.split("/api/projects/")[0]
+    return OpenAI(
+        base_url=f"{resource_endpoint}/mai/v1/",
+        api_key=get_bearer_token_provider(_credential, "https://ai.azure.com/.default"),
+    )
