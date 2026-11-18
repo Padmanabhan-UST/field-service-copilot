@@ -16,8 +16,9 @@ What each session built, the concepts behind it, and the exam traps it covered. 
 | 7 | Nov 18 | Agent + OpenAPI tool | Device-status agent; Foundry calls a mock REST API (static JSON on GitHub) described by an OpenAPI spec | 3/3 |
 | 8 | Nov 18 | Agent + search + approval | Field agent: device API + built-in Azure AI Search tool (citations) + order function gated by a human | 3/3 |
 | 9 | Nov 18 | Evaluations + tracing | Groundedness and relevance over a JSON Lines test set; manual OpenTelemetry spans to Application Insights | 3/3 |
+| 10 | Nov 18 | Document Intelligence | Prebuilt invoice model with confidence-based routing vs DIY OCR + LLM | 2/3 |
 
-Status: 9 of 13 hands-on sessions done. Catch-up day: remaining sessions run back to back.
+Status: 10 of 13 hands-on sessions done. Catch-up day: remaining sessions run back to back.
 
 ## Session details
 
@@ -211,6 +212,27 @@ Observed: groundedness 5.00, relevance 4.20. The correct warranty refusal scored
 
 Exam traps: quality across a test set → evaluation; slow step in one request → tracing. Authenticated telemetry only → Entra ingestion + Monitoring Metrics Publisher + disable local auth. Traces can contain personal data → limit access, control content recording. In production, prefer a specific credential (managed identity) over `DefaultAzureCredential`'s probing.
 
+### 10. Document Intelligence (Nov 18)
+
+| Model | Gives you | Use when |
+|---|---|---|
+| Read (`prebuilt-read`) | Text (OCR) | You only need the words |
+| Layout (`prebuilt-layout`) | Text + tables + selection marks + structure, no named fields | Structure matters but no standard field set fits |
+| Prebuilt (`prebuilt-invoice`, receipt, ID document, W-2, business card…) | Named fields + confidence + bounding boxes | A standard document type |
+| Custom extraction | Your own named fields, trained on 5+ labeled samples | Your own form layout |
+| Composed | Several custom models behind one ID, routed by a classifier | Many different custom forms coming through one entry point |
+
+| Python piece | Meaning |
+|---|---|
+| `begin_analyze_document(...).result()` | Long-running operation: submit, then wait (like awaiting a Task) |
+| `.content` vs `.value_string` / `.value_date` / `.value_currency` | Text as printed vs typed value |
+| `.confidence` | 0–1 per field; drives auto-approve vs human review |
+| `value_array` / `value_object` | Line items: list of objects with their own fields |
+
+Observed: prebuilt and DIY gave identical results on a clean sample invoice. Only prebuilt gave confidences (0.93–0.96), so only it could auto-approve safely.
+
+Exam traps: standard document type → prebuilt model, not OCR + LLM. Your own form → custom extraction model. Text, tables and checkboxes without named fields → layout model. Route uncertain extractions to people → confidence scores.
+
 ## Quiz mistakes to revisit before the exam
 
 | Session | Question | Wrong answer | Right answer and why |
@@ -220,3 +242,4 @@ Exam traps: quality across a test set → evaluation; slow step in one request �
 | 4 | Which parameter adds the vector part | `semantic_configuration_name` | `vector_queries`; "semantic" only re-orders results |
 | 5 | What JSON mode guarantees | Schema field names and types | Valid JSON syntax only; schema conformance needs structured outputs |
 | 6 | Hidden instruction inside an email the agent reads | Prompt Shields, user prompt attack | Prompt Shields, document attack; the attacker wrote the email, not the user |
+| 10 | Text, tables and checkboxes with no named fields | Custom extraction model | Layout model; custom models are for extracting your own named fields |
