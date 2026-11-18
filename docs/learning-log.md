@@ -20,8 +20,9 @@ What each session built, the concepts behind it, and the exam traps it covered. 
 | 11 | Nov 18 | Vision | Generated damaged-part photo, structured damage report from a multimodal model, prompt-only image edit | 3/3 |
 | 12 | Nov 18 | Speech + translation | TTS voice note, fast transcription with a phrase list, Translator with dynamic dictionary, German TTS (Custom Speech as theory) | 2/3 |
 | 13 | Nov 19 | Content Understanding | Video transcript with speakers and key frames from `prebuilt-video` (segmentation as theory) | 3/3 |
+| 14 | Nov 19 | CI evaluation gate | GitHub Actions runs the evaluation on every push; keyless Azure login via OIDC federated credential; every row must pass | 3/3 |
 
-Status: all 13 hands-on service sessions done. Remaining: CI eval gate, README polish, teardown.
+Status: all hands-on sessions done. Remaining: README polish, teardown, mock exams.
 
 ## Session details
 
@@ -296,6 +297,24 @@ Exam traps: few terms + no training → phrase list; many terms + accents + nois
 Problems hit: defaults not set (mapped `gpt-4.1-mini`); `prebuilt-videoSearch` (segmentation) failed with a service-side internal error, so `prebuilt-video` was used.
 
 Exam traps: custom fields across documents, audio and video, no training → Content Understanding custom analyzer. Searchable video scenes with summaries → video analyzer with segmentation, then index. Standard invoices with confidence routing → still Document Intelligence prebuilt.
+
+### 14. CI evaluation gate (Nov 19)
+
+| Concept | Plain meaning |
+|---|---|
+| Workload identity federation (OIDC) | GitHub proves "I am this repo and branch" with a signed token; Entra swaps it for a short-lived Azure token; no secret exists |
+| Federated credential | Trust rule on an app registration: issuer + exact subject (repo + branch / environment / PR) |
+| ID-based subject | `owner@id/repo@id`, so a renamed or re-created repo can't impersonate the original |
+| `permissions: id-token: write` | Lets the job request the OIDC token |
+| `azure/login` with client, tenant and subscription IDs | Federated login; `DefaultAzureCredential` then uses that Azure CLI session |
+| Repository variables vs secrets | IDs and endpoints aren't secret → variables (`vars.X`); real secrets → `secrets.X` |
+| Gate | Evaluation step exits non-zero when any row fails, so the job fails |
+
+Problems hit: GitHub CLI login wasn't saved for this Windows user, so the variables were added in the GitHub UI instead.
+
+Observed: first run passed in 1 m 51 s; every step green, including `azure/login` and `eval_rag.py --gate`.
+
+Exam traps: pipeline to Azure without secrets → OIDC federated credential. "No matching federated identity record" → subject mismatch (branch, environment, PR). Fail builds on quality drops → evaluation with thresholds and a non-zero exit. Pipeline identity → only the data roles it needs.
 
 ## Quiz mistakes to revisit before the exam
 
