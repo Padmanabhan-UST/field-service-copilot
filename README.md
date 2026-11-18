@@ -14,7 +14,7 @@ An AI assistant for technicians who maintain industrial equipment. Built on **Mi
 | Technician uploads a photo of a damaged part | Multimodal image understanding | ✅ |
 | Summarize an inspection video into searchable segments | Content Understanding video analyzer | ✅ (transcript + key frames; segmentation analyzer failed service-side) |
 | Voice note → report → translated for another site | Speech (phrase list), Translator (dynamic dictionary), text-to-speech | ✅ |
-| Run it safely and measurably | Prompt Shields, content filters, evaluations, tracing, CI quality gate | ⬜ |
+| Run it safely and measurably | Prompt Shields, content filters, evaluations, tracing, CI quality gate | ✅ |
 
 ## Architecture
 
