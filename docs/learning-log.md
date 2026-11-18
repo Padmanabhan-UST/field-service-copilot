@@ -13,8 +13,9 @@ What each session built, the concepts behind it, and the exam traps it covered. 
 | 4 | Nov 10 | RAG query | Hybrid + semantic search, grounded answers with citations, refusal when manuals don't cover a question | 2/3 |
 | 5 | Nov 11 | Structured outputs | Work order from a free-text report: prompt-only JSON vs strict schema with Pydantic | 2/3 |
 | 6 | Nov 11 | Safety layers | Harm analysis, jailbreak blocked by the deployment, Prompt Shields (user + document attacks), groundedness detection | 2/3 |
+| 7 | Nov 18 | Agent + OpenAPI tool | Device-status agent; Foundry calls a mock REST API (static JSON on GitHub) described by an OpenAPI spec | 3/3 |
 
-Status: 6 of 13 hands-on sessions done, 2 days ahead of schedule.
+Status: 7 of 13 hands-on sessions done. Catch-up day: remaining sessions run back to back.
 
 ## Session details
 
@@ -129,7 +130,34 @@ Observed: Violence severity 4 for a threat against a person. The jailbreak was b
 
 How it's called: REST on the Foundry resource (`/contentsafety/text:analyze`, `text:shieldPrompt`, `text:detectGroundedness`), keyless with an Entra token for the `cognitiveservices` scope.
 
+Also covered: in a chat app, every turn runs the same pipeline: shield the user prompt, retrieve, shield the documents, generate (deployment guardrail filters input and output), check groundedness. Centralize rules for many apps with an AI gateway (API Management).
+
 Exam traps: who wrote the attack decides the shield type. Typed by the user → user prompt attack. Hidden in an email, document or web page the model reads → document attack. Unsupported claims → groundedness, not content filters. Specific words → blocklist, not a severity threshold.
+
+### 7. Agent + OpenAPI tool (Nov 18)
+
+| | Function tool | OpenAPI tool |
+|---|---|---|
+| Who calls the API | Your app (`function_call` → you run it → `function_call_output`) | The Foundry service (`openapi_call` → `openapi_call_output`) |
+| You provide | JSON schema for arguments | OpenAPI 3 spec: server, paths, parameters |
+| API must be reachable from | Your app | Azure |
+| Auth | Whatever your code does | Anonymous, key via project connection, or managed identity |
+| Best for | App-side logic, control, approval before acting | Existing REST APIs, no glue code |
+
+| Other agent tools | Use for |
+|---|---|
+| Azure AI Search | Grounding in your own index |
+| File search | Files uploaded to the agent (managed vector store) |
+| Code interpreter | Python in a sandbox: maths, charts, CSV analysis |
+| Web search / Bing grounding | Current public information |
+| MCP | Tools exposed by an MCP server |
+| Azure Functions | Your own serverless code |
+
+Problems hit and fixed: `ModuleNotFoundError: common` (missing `sys.path.append`); `openApi=` instead of `openapi=` (keyword arguments are case-sensitive); agent name with underscores rejected (letters, digits, hyphens only, max 63).
+
+Observed: 1 API call for one device, 2 for a comparison. Without the manuals the agent couldn't explain alarm codes or notice PUMP-101 is past its 16,000 h bearing interval.
+
+Exam traps: existing REST API + no execution code → OpenAPI tool. Secure tool auth → managed identity, never keys in instructions or specs. Agent names: hyphens, not underscores.
 
 ## Quiz mistakes to revisit before the exam
 

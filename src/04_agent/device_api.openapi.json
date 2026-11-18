@@ -1,0 +1,31 @@
+{
+  "openapi": "3.0.1",
+  "info": { "title": "Contoso device status API (mock)", "version": "1.0" },
+  "servers": [
+    { "url": "https://raw.githubusercontent.com/Padmanabhan-UST/field-service-copilot/main/data/devices" }
+  ],
+  "paths": {
+    "/{device_id}.json": {
+      "get": {
+        "operationId": "getDeviceStatus",
+        "summary": "Get live status, readings and active alarms for one device",
+        "parameters": [
+          {
+            "name": "device_id",
+            "in": "path",
+            "required": true,
+            "description": "Device ID such as PUMP-101 or AC75-007",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device status as JSON text",
+            "content": { "text/plain": { "schema": { "type": "string" } } }
+          },
+          "404": { "description": "Unknown device" }
+        }
+      }
+    }
+  }
+}
